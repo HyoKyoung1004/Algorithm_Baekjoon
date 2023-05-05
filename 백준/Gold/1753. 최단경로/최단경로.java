@@ -1,118 +1,87 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Scanner;
+import java.util.PriorityQueue;
+import java.util.StringTokenizer;
 
 public class Main {
-
-    public static final int INF = Integer.MAX_VALUE; // 무한을 의미하는 값 설정
-    static int vn;
-    static int e;
-    static int k;
-    static ArrayList<ArrayList<Node>> al;
-    static boolean[] visit;
-    static int[] distance;
-
-    public static void main(String[] args) {
-
-        Scanner scan = new Scanner(System.in);
-
-        vn = scan.nextInt();//정점의 개수
-        e = scan.nextInt(); //간서의 개수
-        k = scan.nextInt(); //시작점
+	
+	static class Edge implements Comparable<Edge>{
+		int v, w;
 
 
-        //초기화
-        al = new ArrayList<>();
-        for(int i=0;i<=vn;i++){
-            al.add(new ArrayList<Node>());
-        }
-        visit = new boolean[vn+1];
-        distance = new int[vn+1];
-        Arrays.fill(distance,INF);
+		public Edge(int v, int w) {
+			super();
+			this.v = v;
+			this.w = w;
+		}
 
+		@Override
+		public String toString() {
+			return "Edge [v=" + v + ", w=" + w + "]";
+		}
+		
+		@Override
+		public int compareTo(Edge o) {
+			return Integer.compare(this.w, o.w);
+		}
+		
+	}
+	
+	public static void main(String[] args) throws Exception {
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		
+		int V = Integer.parseInt(st.nextToken());
+		int E = Integer.parseInt(st.nextToken());
+		int start = Integer.parseInt(br.readLine());
+		ArrayList<Edge>[] adjList = new ArrayList[V+1];
+		
+		for(int i=1;i<=V;i++) {
+			adjList[i] = new ArrayList<Edge>();
+		}
+		
+		for(int i=0;i<E;i++) {
+			st = new StringTokenizer(br.readLine());
+			int u = Integer.parseInt(st.nextToken());
+			int v = Integer.parseInt(st.nextToken());
+			int w = Integer.parseInt(st.nextToken());
+			adjList[u].add(new Edge(v, w));
+		}//입력 끝
+		
+		
+		final int INF = Integer.MAX_VALUE;
 
-        for(int i=0;i<e;i++) {
+		int[] D = new int[V+1];
+		Arrays.fill(D, INF);
+		D[start]=0;
+		boolean[] visit = new boolean[V+1];
+		PriorityQueue<Edge> pq = new PriorityQueue<>();
+		pq.add(new Edge(start,0));
+		
+		
+		int currnet, value;
+		while(!pq.isEmpty()) {
+			//System.out.println(pq);
+			
+			Edge now = pq.poll();
+			if(visit[now.v]) continue;
+			visit[now.v]=true;
+			
+			for(Edge e: adjList[now.v]) {
+				
+				if(!visit[e.v] && D[e.v] > now.w+e.w) {
+					D[e.v] = now.w+e.w;
+					pq.add(new Edge(e.v, D[e.v]));
+				}
+			}
+		}
+		
+		for(int i=1;i<=V;i++) {
+			System.out.println(D[i]==INF ?"INF":D[i]);
+		}
+	}
 
-            int u = scan.nextInt(); //u->v
-            int v = scan.nextInt();
-            int w = scan.nextInt(); //가중치
-
-            al.get(u).add(new Node(v, w));
-        }
-
-
-        visit[k]=true;
-        distance[k]=0;
-        updateDistance(k); //시작노드부터 거리 update
-
-        for(int i=1;i<=vn;i++){
-
-            if(i==k) continue;
-            int now = searchLow();
-            visit[now] =true;
-            updateDistance(now);
-
-        }
-
-
-        for(int i=1;i<=vn;i++) {
-            if(distance[i] == INF)
-                System.out.println("INF");
-            else System.out.println(distance[i]);
-        }
-    }
-
-    static void updateDistance(int n){
-
-        int nowdis = distance[n];
-
-        for( Node tmp :al.get(n)){
-            int tmpN = tmp.getIndex();
-            int tmpD =tmp.getDistance();
-
-            if(distance[tmpN] > nowdis +tmpD ){
-                distance[tmpN] = nowdis +tmpD;
-            }
-
-        }
-    }
-
-    static int searchLow(){
-
-        int min= INF;
-        int lowIndex=0;
-        for(int i=1;i<=vn;i++){
-            if(i== k) continue;
-            if(visit[i] == true) continue;
-
-            if(distance[i]<min){
-                min = distance[i];
-                lowIndex=i;
-            }
-
-        }
-        return lowIndex;
-    }
-}
-class Node {
-    private int index;
-    private int distance;
-
-    Node(int index, int distance) {
-        this.index = index;
-        this.distance = distance;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    @Override
-    public String toString() {
-        return index+", "+distance;
-    }
 }
