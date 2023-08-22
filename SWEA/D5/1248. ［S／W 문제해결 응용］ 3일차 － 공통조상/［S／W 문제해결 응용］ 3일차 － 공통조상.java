@@ -1,81 +1,69 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Solution {
 
-    static class Node{ //트리의 각 노드는 부모와 자식을 가지고 있음
-        int parent;
-        ArrayList<Integer> child;
-    }
+    static ArrayList<Integer>[] graph;
+    static int[] parent;
+    static int V, E, S1, S2, subTreeSize;
+    public static void main(String[] args) throws Exception{
 
-    static int N, M, A, B; //노드 수, 간선 수,A,B
-    static Node[] nodes;
-    static ArrayList<Integer> ancestorA,ancestorB;
-
-    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int TC = Integer.parseInt(br.readLine());
-        StringTokenizer st;
         StringBuilder sb = new StringBuilder();
+        StringTokenizer st;
 
         for(int tc=1;tc<=TC;tc++){
-
+            subTreeSize=0;
             st = new StringTokenizer(br.readLine());
-            N = Integer.parseInt(st.nextToken());
-            M = Integer.parseInt(st.nextToken());
-            A = Integer.parseInt(st.nextToken());
-            B = Integer.parseInt(st.nextToken());
+            V = Integer.parseInt(st.nextToken());
+            E = Integer.parseInt(st.nextToken());
+            S1 = Integer.parseInt(st.nextToken());
+            S2 = Integer.parseInt(st.nextToken());
 
-            nodes = new Node[N + 1];
-            for(int i=1;i<=N;i++){
-                nodes[i] = new Node();
-                nodes[i].child = new ArrayList<>();
+            graph = new ArrayList[V+1];
+            for(int i=1;i<=V;i++){
+                graph[i] = new ArrayList<Integer>();
+            }
+            parent = new int[V+1];
+
+            st  = new StringTokenizer(br.readLine());
+            for(int i=0;i<E;i++){
+                int s =  Integer.parseInt(st.nextToken());
+                int e =  Integer.parseInt(st.nextToken());
+                graph[s].add(e);
+                parent[e]=s;
+            }
+            //공통 부모 찾기
+            int commonParent=1;
+            Set<Integer> set = new HashSet<>();
+            int nowParent=S1;
+            while(nowParent!=0){
+                set.add(nowParent);
+                nowParent = parent[nowParent];
+            }
+            nowParent=S2;
+            while(nowParent!=0){
+                if(set.contains(nowParent)){
+                    commonParent = nowParent;
+                    break;
+                }
+                nowParent = parent[nowParent];
             }
 
-            st = new StringTokenizer(br.readLine());
-            for(int i=1;i<=M;i++){
-                int p = Integer.parseInt(st.nextToken());
-                int e = Integer.parseInt(st.nextToken());
-                nodes[p].child.add(e);
-                nodes[e].parent = p;
-            }
-
-
-            //조상 찾아서 넣기
-            ancestorA = new ArrayList<>();
-            ancestorB = new ArrayList<>();
-            traverse(A, ancestorA);
-            traverse(B, ancestorB);
-
-            //공통 조상 찾기,
-            int lca = -1;
-            for(int i=0;i<N;i++){
-                //다르면 멈춰
-                if(!ancestorA.get(i).equals(ancestorB.get(i))) break;
-                lca = ancestorA.get(i);
-            }
-
-            int subTreeNum = dfs(lca);
-            sb.append("#"+tc+" "+lca+" "+subTreeNum+"\n");
+            //서브트리 크기 구하기
+            bfs(commonParent);
+            sb.append("#"+tc+" "+commonParent+" "+subTreeSize+"\n");
         }
         System.out.println(sb);
     }
 
-    private static int dfs(int n) {
-        int res=1; //나 자신
-        for(int tmp : nodes[n].child)
-            res+= dfs(tmp);
-
-        return res;
+    private static void bfs(int n) {
+        subTreeSize++;
+        for(int temp : graph[n]){
+                bfs(temp);
+        }
     }
 
-    private static void traverse(int n, ArrayList<Integer> ancestor) {
-
-        if(n!=1) //루트 노드가 아니면 부모 노드 존재
-            traverse(nodes[n].parent, ancestor);
-        ancestor.add(n);
-
-    }
 }
