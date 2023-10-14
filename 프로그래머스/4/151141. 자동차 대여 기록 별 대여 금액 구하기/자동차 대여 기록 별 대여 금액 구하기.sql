@@ -16,7 +16,7 @@ else daily_fee *days
 end FEE
 
 from (
-select history_id, daily_fee, end_date, start_Date , to_days(end_date) - to_days(start_date)+1 days from CAR_RENTAL_COMPANY_CAR car
+select history_id, daily_fee, end_date, start_Date , DATEDIFF( end_date, start_date)+1 days from CAR_RENTAL_COMPANY_CAR car
 join CAR_RENTAL_COMPANY_RENTAL_HISTORY history
 on car.CAR_ID = history.CAR_ID
 where CAR_TYPE ='트럭'
