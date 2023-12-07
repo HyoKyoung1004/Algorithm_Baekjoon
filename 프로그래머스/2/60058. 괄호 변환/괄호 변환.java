@@ -7,7 +7,6 @@ class Solution {
         return answer;
     }
     
-    
     private static String garo(String s){
         
         // System.out.println("입력: "+s);
@@ -37,7 +36,7 @@ class Solution {
             u+=garo(v);
             return u;
         }else{
-            
+            //4
             String tmp ="(";
             tmp += garo(v);
             tmp+=")";
@@ -70,6 +69,7 @@ class Solution {
                 else stack.pop();
             }
         }
+        
         
         return true;
         
