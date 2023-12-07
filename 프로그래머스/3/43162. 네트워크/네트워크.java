@@ -13,9 +13,7 @@ class Solution {
             if(visit[i]) continue;
             bfs(i, computers);
             answer++;
-            
         }    
-        
         return answer;
     }
     
@@ -25,16 +23,12 @@ class Solution {
         visit[k]=true;
 
         while(!q.isEmpty()){
-            // System.out.println(q);
             int now = q.poll();
             for(int i=0;i<N;i++){
-
                 if(arr[now][i]==0 || visit[i] ) continue;
-
                 visit[i]=true;
                 q.add(i);
             }
-
         }
     }
 }
