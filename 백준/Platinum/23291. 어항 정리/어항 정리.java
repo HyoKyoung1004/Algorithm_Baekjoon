@@ -23,8 +23,8 @@ public class Main {
         int result=0;
         while(true) {
             result++;
-            one();
-            int[][] arrT = rotateArr1(); //겅중부양
+            leastValue();
+            int[][] arrT = rotateArr1(); //공중부양
             arrT = regulateFishCount(arrT); //물고기 수 조절
             int[] tmp = flatArr(arrT, arrT.length, arrT[0].length); //일렬로 놓기
             arrT = rotateArr2(tmp);
@@ -36,12 +36,15 @@ public class Main {
 
             Arrays.sort(tmp);
             if(tmp[N-1] -  tmp[0] <=K) break;
+//            System.out.println(Arrays.toString(tmp));
+//            System.out.println("===================================");
         }
         System.out.println(result);
 
     }
 
-    static void one(){
+    //물고기의 수가 가장 적은 어항에 물고기를 한 마리 넣는다
+    static void leastValue(){
         int minValue = arr[0];
         for(int i=1;i<N;i++){
             if(minValue >arr[i]) minValue=arr[i];
@@ -49,9 +52,13 @@ public class Main {
         for(int i=0;i<N;i++){
             if(minValue == arr[i]) arr[i]++;
         }
+//        System.out.println(Arrays.toString(arr));
     }
 
     static int[][] rotateArr1(){
+
+//        System.out.println("공중부양1");
+
         int nowH=2; //공중부양 시킬 높이
         int nowW=1; //공중부양 시킬 너비
         int c = N-1; //현재 배열 너비
@@ -61,6 +68,7 @@ public class Main {
         for(int i=0;i<N-nowW;i++){
             arrT[1][i] = arr[i+1];
         }
+
         c= c-nowW;
         while(c>=nowH){
 
@@ -74,6 +82,7 @@ public class Main {
             for(int i=0;i<c;i++){
                 tmp[nowW][i] = arrT[nowH-1][i+nowW];
             }
+
             int tmpW = nowW;
             nowW = nowH; 
             nowH = tmpW+1; 
@@ -88,6 +97,7 @@ public class Main {
     //물고기 수 조절
     static int[][] regulateFishCount(int[][] arrT ){
 
+//        System.out.println("물고기 수 조절");
         int n = arrT.length;
         int m = arrT[0].length;
         int[][] countArr = new int[n][m];
@@ -132,11 +142,14 @@ public class Main {
         }
 
         arrT = countArr;
+        //System.out.println(Arrays.deepToString(arrT));
 
         return arrT;
     }
 
+    //다시 어항을 바닥에 일렬로 놓아야 한다
     static int[] flatArr(int[][] arrT, int n, int m){
+//        System.out.println("어항을 바닥에 일렬로 놓아야 한다");
 
         int[] tmp = new int[N];
         int k=0;
@@ -147,11 +160,14 @@ public class Main {
                 k++;
             }
         }
+//        System.out.println(Arrays.toString(tmp));
         return tmp;
     }
 
 
+
     static int[][] rotateArr2(int[] tmp){
+//        System.out.println("공중부양2");
 
         int[][] arrOne = new int[2][N/2];
 
@@ -159,7 +175,10 @@ public class Main {
             arrOne[0][i] =  tmp[N/2-i-1];
             arrOne[1][i] = tmp[N/2+i];
         }
+//        System.out.println(Arrays.deepToString(arrOne));
 
+
+        //오른쪽으로 90도 회전을 두번함
         int[][] arrTmp1 = new int[N/4][2];
         for(int i=0;i<2;i++){
             for(int j=0; j<N/4;j++){
@@ -182,6 +201,7 @@ public class Main {
                 arrTwo[2+i][j] = arrOne[i][N/4+j];
             }
         }
+//        System.out.println(Arrays.deepToString(arrTwo));
         return arrTwo;
 
     }
