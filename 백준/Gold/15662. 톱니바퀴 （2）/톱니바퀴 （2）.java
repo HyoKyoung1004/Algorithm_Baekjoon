@@ -1,86 +1,74 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Main {
-    static int T,K;
-    static char[][] arr, tmp;
 
-    public static void main(String[] args) throws Exception{
+    static int T,start;
+    static char[][] arr;
+    public static void main(String[] args) throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         T = Integer.parseInt(br.readLine());
 
-        arr = new char[T+1][];
-
-        for(int i=1;i<=T;i++) {
+        arr = new char[T][];
+        for(int i=0;i<T;i++){
             arr[i] = br.readLine().toCharArray();
         }
 
-
-        K = Integer.parseInt(br.readLine());
-
-        for(int i=0;i<K;i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine());
-            int n = Integer.parseInt(st.nextToken());
+        int k = Integer.parseInt(br.readLine());
+        StringTokenizer st;
+        for(int i=0;i<k;i++){
+            st = new StringTokenizer(br.readLine());
+            start = Integer.parseInt(st.nextToken())-1;
             int direction = Integer.parseInt(st.nextToken());
-
-
-            if(n+1<=T && arr[n][2] != arr[n+1][6]){
-                rightRotate(n+1, -direction);
-            }
-
-            if(n-1>0 && arr[n-1][2] != arr[n][6]){
-                leftRotate(n-1, -direction);
-            }
-
-            rotation(n,direction); //나를 회전
-            //System.out.println(Arrays.deepToString(arr));
+            chooseDirection(start, true,direction);
+            chooseDirection(start, false,direction);
+            rotate(start,direction);
+//            System.out.println(Arrays.deepToString(arr));
         }
 
-        int count=0;
-        for(int i=1;i<=T;i++) {
-            if(arr[i][0]=='1') count++;
+        int result = 0;
+        for(int i=0;i<T;i++){
+            if(arr[i][0]=='1') result++;
         }
-        System.out.println(count);
+        System.out.println(result);
+    }
 
+    static void chooseDirection(int now,  boolean isRight, int direc){
 
+        if(isRight){ //오른쪽을 확인
+            if(now!=T-1 &&arr[now][2] != arr[now+1][6]){
+                chooseDirection(now+1, true, direc*-1);
+            }
+            if(now!=start) rotate(now,direc);
+        }
 
+        else{ //왼쪽을 확인
+
+            if(now !=0 && arr[now][6] != arr[now-1][2]) {
+                chooseDirection(now - 1, false, direc * -1);
+            }
+            if(now!=start) rotate(now,direc);
+        }
 
     }
-    
-    private static void rotation(int n, int direction) {
 
-        if (direction == 1) { //시계
-            char temp = arr[n][7];
+    private static void rotate(int now, int direc) {
+
+        if(direc==1){ //시계회전
+            char last = arr[now][7];
             for(int i=7;i>0;i--)
-                arr[n][i] = arr[n][i-1];
-            arr[n][0] =temp;
-
+                arr[now][i] = arr[now][i-1];
+            arr[now][0]=last;
         }else{
-            char t = arr[n][0]; //반시계
+            char first = arr[now][0];
             for(int i=0;i<7;i++)
-                arr[n][i] = arr[n][i+1];
-            arr[n][7]=t;
+                arr[now][i] = arr[now][i+1];
+            arr[now][7] = first;
         }
-        
-    }
-    
-    public static void rightRotate(int n, int direction){
-
-        //오른쪽
-        if(n+1<=T && arr[n][2] != arr[n+1][6]){
-            rightRotate(n+1, -direction);
-        }
-        rotation(n,direction);
+//        System.out.println(now+", "+direc+": "+ Arrays.toString(arr[now]));
     }
 
-    public static void leftRotate(int n, int direction){
-        //왼쪽
-        if(n-1>0 && arr[n-1][2] != arr[n][6]){
-            leftRotate(n-1, -direction);
-        }
-        rotation(n,direction);
-    }
 }
